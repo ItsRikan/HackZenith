@@ -1,13 +1,13 @@
 // import { object } from 'framer-motion/client';
-import { setSessionValue,getSessionValue } from '../lib/session';
+import { setSessionValue, getSessionValue } from '../lib/session';
 import api from './externalRequest'
 import type { AxiosResponse } from 'axios';
 interface CollegeApiResponse {
     final_result: string;
     summary: string;
     ready_to_send?: boolean;
-    draft?:string
-    department?:string
+    draft?: string
+    department?: string
 }
 export interface CollegeData {
     name: string;
@@ -107,27 +107,27 @@ export const collegeData: CollegeData = {
     }
 };
 
-export async function generateCollegeResponse(prompt: string): Promise<string | {type: 'mail_preview', draft: string, message: string, department: string}>{
+export async function generateCollegeResponse(prompt: string): Promise<string | { type: 'mail_preview', draft: string, message: string, department: string }> {
     try {
-    const summary: Record<string, any> =
-        getSessionValue<Record<string, any>>('summary') ?? {};
+        const summary: Record<string, any> =
+            getSessionValue<Record<string, any>>('summary') ?? {};
 
-    const request_body = {
-        'user_query': prompt,
-        'prev_action': summary
-    };
-    const result:AxiosResponse<CollegeApiResponse> = await api.post('/query',request_body)
-    setSessionValue('summary',result.data.summary)
-    if(result.data.ready_to_send){
-        return {type: 'mail_preview', draft: result.data.draft || '', message: result.data.final_result, department: result.data.department || ''}
-    }else{
-        return result.data.final_result
+        const request_body = {
+            'user_query': prompt,
+            'prev_action': summary
+        };
+        const result: AxiosResponse<CollegeApiResponse> = await api.post('/query', request_body)
+        setSessionValue('summary', result.data.summary)
+        if (result.data.ready_to_send) {
+            return { type: 'mail_preview', draft: result.data.draft || '', message: result.data.final_result, department: result.data.department || '' }
+        } else {
+            return result.data.final_result
+        }
+
+
+    } catch (error) {
+        return "Sorry, I am not getting response from backend"
     }
-    
-
-} catch (error) {
-    return "Sorry, I am not getting response from backend"
-}
 
 };
 
